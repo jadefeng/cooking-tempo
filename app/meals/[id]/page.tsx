@@ -93,10 +93,10 @@ export default async function MealDetailPage({ params }: MealDetailProps) {
             </p>
           </div>
           <Link
-            className="rounded-full bg-[var(--cocoa)] px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white visited:text-white"
             href={`/meals/${meal.id}/cook-timeline`}
           >
-            Cook timeline
+            Start Cooking
           </Link>
         </div>
       </div>

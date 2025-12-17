@@ -81,11 +81,13 @@ export default function CookTimelineClient({
           </p>
         </div>
         <button
-          className="rounded-full bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white"
+          className={`rounded-full px-5 py-3 text-sm font-semibold text-white ${
+            startMode ? "bg-rose-600" : "bg-emerald-600"
+          }`}
           type="button"
           onClick={() => setStartMode((prev) => !prev)}
         >
-          {startMode ? "Exit cooking" : "Start cooking"}
+          {startMode ? "Stop cooking" : "Start cooking"}
         </button>
       </div>
 
