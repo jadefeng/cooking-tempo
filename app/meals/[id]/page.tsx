@@ -44,6 +44,116 @@ function estimateRecipeDuration(instructionsText: string) {
   }, 0);
 }
 
+function normalizeIngredient(line: string) {
+  return line
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, "")
+    .replace(/\b\d+([./]\d+)?\b/g, "")
+    .replace(
+      /\b(cup|cups|tbsp|tablespoon|tablespoons|tsp|teaspoon|teaspoons|oz|ounce|ounces|lb|lbs|pound|pounds|g|gram|grams|kg|ml|l|liter|liters|pinch|clove|cloves|slice|slices|can|cans|package|packages)\b/g,
+      "",
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getIngredientKeywords(ingredientsText: string) {
+  const stop = new Set([
+    "and",
+    "or",
+    "to",
+    "taste",
+    "for",
+    "with",
+    "fresh",
+    "optional",
+    "ground",
+    "minced",
+    "chopped",
+    "diced",
+    "sliced",
+    "grated",
+    "shredded",
+    "cooked",
+    "uncooked",
+    "plus",
+    "more",
+    "as needed",
+    "of",
+    "the",
+    "a",
+    "an",
+  ]);
+
+  const lines = ingredientsText
+    .split(/\r?\n/)
+    .map((line) => normalizeIngredient(line))
+    .filter(Boolean);
+
+  const tokens = lines
+    .flatMap((line) => line.split(/[,\u2013\u2014\-]/g))
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .map((token) => token.replace(/^[•\-*]+\s*/, "").trim())
+    .filter((token) => token.length > 1 && !stop.has(token));
+
+  return Array.from(new Set(tokens));
+}
+
+function describeRecipe(title: string, ingredientsText: string) {
+  const lowerTitle = title.toLowerCase();
+  const ingredients = getIngredientKeywords(ingredientsText);
+
+  if (!ingredientsText.trim()) {
+    return "A tasty dish — add ingredients to generate a better description.";
+  }
+
+  const has = (needle: string) =>
+    lowerTitle.includes(needle) ||
+    ingredients.some((item) => item.includes(needle));
+
+  const base =
+    lowerTitle
+      .replace(/[^a-z0-9\s]/g, "")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(-2)
+      .join(" ") || "dish";
+
+  if (has("potato") && has("parmesan")) {
+    return "Delicious potatoes crusted with parmesan cheese.";
+  }
+
+  if (has("chicken") && has("lemon")) {
+    return "Bright, lemony chicken with a fresh, savory finish.";
+  }
+
+  if (has("pasta") && has("garlic")) {
+    return "Comforting pasta with garlicky, craveable flavor.";
+  }
+
+  if (has("crispy") || has("crisp")) {
+    const highlight = ingredients.find((item) =>
+      ["parmesan", "panko", "cornstarch", "breadcrumbs"].some((key) =>
+        item.includes(key),
+      ),
+    );
+    if (highlight) {
+      return `Crispy ${base} with a ${highlight} crunch.`;
+    }
+    return `Crispy ${base} with big flavor.`;
+  }
+
+  const firstTwo = ingredients.slice(0, 2);
+  if (firstTwo.length === 2) {
+    return `A delicious ${base} featuring ${firstTwo[0]} and ${firstTwo[1]}.`;
+  }
+  if (firstTwo.length === 1) {
+    return `A delicious ${base} featuring ${firstTwo[0]}.`;
+  }
+  return `A delicious ${base} for any day of the week.`;
+}
+
 export default async function MealDetailPage({ params }: MealDetailProps) {
   const { id } = await params;
   const meal = await prisma.meal.findUnique({
@@ -174,7 +284,7 @@ export default async function MealDetailPage({ params }: MealDetailProps) {
                   {item.recipe.title}
                 </h3>
                 <p className="text-sm text-stone-500">
-                  {item.recipe.sourceUrl ?? "No source link"}
+                  {describeRecipe(item.recipe.title, item.recipe.ingredientsText)}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
