@@ -169,14 +169,6 @@ export default async function RecipesPage() {
                 >
                   View
                 </Link>
-                <form action={deleteRecipe.bind(null, recipe.id)}>
-                  <button
-                    className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700"
-                    type="submit"
-                  >
-                    Delete
-                  </button>
-                </form>
               </div>
             </div>
           ))

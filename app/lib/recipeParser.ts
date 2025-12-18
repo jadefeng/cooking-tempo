@@ -12,17 +12,27 @@ type CaptionLine = {
   hadBullet: boolean;
 };
 
+function decodeEntities(value?: string) {
+  if (!value) return "";
+  const wrapped = `<span>${value}</span>`;
+  const $ = cheerio.load(wrapped);
+  return $("span").text();
+}
+
 function normalizeArray(values: string[]) {
-  return values.map((value) => value.trim()).filter(Boolean);
+  return values
+    .map((value) => decodeEntities(value).trim())
+    .filter(Boolean);
 }
 
 function normalizeText(value?: string) {
-  return value?.replace(/\s+/g, " ").trim() ?? "";
+  const decoded = decodeEntities(value);
+  return decoded.replace(/\s+/g, " ").trim() ?? "";
 }
 
 function normalizeCaption(value?: string) {
   if (!value) return "";
-  return value.replace(/\r/g, "").replace(/\\n/g, "\n").trim();
+  return decodeEntities(value).replace(/\r/g, "").replace(/\\n/g, "\n").trim();
 }
 
 function extractRecipeNodes(json: unknown): Record<string, unknown>[] {

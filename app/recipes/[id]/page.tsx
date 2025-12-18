@@ -87,7 +87,7 @@ export default async function RecipeDetailPage({ params }: RecipeDetailProps) {
             <ol className="mt-4 space-y-3 text-sm text-stone-700">
               {instructions.map((step, index) => (
                 <li key={`${step}-${index}`} className="flex gap-4">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--apricot)] text-xs font-semibold text-stone-900">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--apricot)] text-xs font-semibold text-stone-900">
                     {index + 1}
                   </span>
                   <span>{step}</span>
