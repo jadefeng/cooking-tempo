@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/prisma";
 import { normalizeMultiline } from "@/app/lib/recipes";
 import { recipeInputSchema } from "@/app/lib/validation";
 import { redirect } from "next/navigation";
+import { SubmitButton } from "./SubmitButton";
 
 export const dynamic = "force-dynamic";
 
@@ -277,12 +278,7 @@ export default function GenerateRecipePage() {
           />
         </label>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white"
-            type="submit"
-          >
-            Generate & save
-          </button>
+          <SubmitButton />
           <p className="text-xs text-stone-500">
             This can take a 1-2 minutes to generate, so please be patient. <br></br>
             Powered by ChatGPT. You can re-run or edit the result in your recipes list.
