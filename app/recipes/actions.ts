@@ -32,17 +32,19 @@ export async function createRecipe(
   const ingredientsText = normalizeMultiline(parsed.data.ingredientsText);
   const instructionsText = normalizeMultiline(parsed.data.instructionsText);
 
-  await prisma.recipe.create({
+  const created = await prisma.recipe.create({
     data: {
       title: parsed.data.title,
       sourceUrl: parsed.data.sourceUrl || null,
       ingredientsText,
       instructionsText,
     },
+    select: { id: true },
   });
 
+  revalidatePath(`/recipes/${created.id}`);
   revalidatePath("/recipes");
-  redirect("/recipes");
+  redirect(`/recipes/${created.id}`);
 }
 
 export async function updateRecipe(

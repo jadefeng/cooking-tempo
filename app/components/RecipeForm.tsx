@@ -76,7 +76,7 @@ export default function RecipeForm({
         <textarea
           className="min-h-[160px] rounded-3xl border border-stone-200 bg-white px-4 py-3 text-base"
           name="ingredientsText"
-          placeholder="1 cup rice\n2 cloves garlic\n1 tbsp olive oil"
+          placeholder="1 cup olive oil"
           defaultValue={initialValues?.ingredientsText ?? ""}
         />
       </label>
@@ -85,7 +85,7 @@ export default function RecipeForm({
         <textarea
           className="min-h-[200px] rounded-3xl border border-stone-200 bg-white px-4 py-3 text-base"
           name="instructionsText"
-          placeholder="Preheat the pan.\nAdd oil and toast the spices.\nFinish with herbs."
+          placeholder="Heat up the oil and toast the spices"
           defaultValue={initialValues?.instructionsText ?? ""}
         />
       </label>

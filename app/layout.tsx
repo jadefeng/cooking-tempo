@@ -33,10 +33,15 @@ export default function RootLayout({
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <Link
-                  className="font-display text-2xl text-stone-900 sm:text-3xl"
+                  className="flex items-center gap-2 font-display text-2xl text-stone-900 sm:text-3xl"
                   href="/meals"
                 >
-                  Cooking Tempo
+                  <img
+                    src="/icon.png"
+                    alt="Cooking Tempo"
+                    className="h-8 w-8 rounded-xl bg-white object-contain"
+                  />
+                  <span>Cooking Tempo</span>
                 </Link>
               </div>
               <nav className="flex flex-wrap gap-3 text-base font-semibold text-stone-800">

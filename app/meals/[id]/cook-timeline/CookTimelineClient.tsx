@@ -171,14 +171,19 @@ export default function CookTimelineClient({
                     >
                       Done
                     </button>
-                    <button
-                      className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white"
-                      type="button"
-                      onClick={goNext}
-                      disabled={cursorIndex >= merged.length - 1}
-                    >
-                      Next
-                    </button>
+                    {cursorIndex >= merged.length - 1 ? (
+                      <span className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white">
+                        Last step
+                      </span>
+                    ) : (
+                      <button
+                        className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white"
+                        type="button"
+                        onClick={goNext}
+                      >
+                        Next
+                      </button>
+                    )}
                   </div>
                   {nextStep ? (
                     <div className="mt-4 rounded-3xl border border-stone-200 bg-white px-5 py-4">

@@ -34,17 +34,19 @@ export async function createMeal(
     return { message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  await prisma.meal.create({
+  const created = await prisma.meal.create({
     data: {
       title: parsed.data.title,
       recipes: {
         create: parsed.data.recipeIds?.map((recipeId) => ({ recipeId })) ?? [],
       },
     },
+    select: { id: true },
   });
 
+  revalidatePath(`/meals/${created.id}`);
   revalidatePath("/meals");
-  redirect("/meals");
+  redirect(`/meals/${created.id}`);
 }
 
 export async function updateMealTitle(mealId: string, formData: FormData) {
@@ -88,7 +90,7 @@ export async function addRecipesToMeal(mealId: string, formData: FormData) {
   if (newIds.length === 0) {
     revalidatePath("/meals");
     revalidatePath(`/meals/${mealId}`);
-    redirect("/meals");
+    redirect(`/meals/${mealId}`);
   }
 
   await prisma.mealRecipe.createMany({
