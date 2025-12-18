@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -9,11 +10,15 @@ type ChecklistProps = {
 };
 
 export default function Checklist({ items, mealId }: ChecklistProps) {
-  const sorted = useMemo(
-    () => [...items].sort((a, b) => a.localeCompare(b)),
-    [items],
-  );
   const storageKey = `meal-checklist-${mealId}`;
+  const customKey = `meal-ingredients-custom-${mealId}`;
+  const [customItems, setCustomItems] = useState<string[] | null>(null);
+
+  const sorted = useMemo(() => {
+    const source = (customItems ?? items).filter(Boolean);
+    return Array.from(new Set(source)).sort((a, b) => a.localeCompare(b));
+  }, [customItems, items]);
+
   const [checked, setChecked] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return {};
     try {
@@ -31,6 +36,16 @@ export default function Checklist({ items, mealId }: ChecklistProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
+      const customRaw = localStorage.getItem(customKey);
+      if (customRaw) {
+        const parsed = JSON.parse(customRaw) as string[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCustomItems(parsed);
+        }
+      } else {
+        setCustomItems(null);
+      }
+
       const raw = localStorage.getItem(storageKey);
       if (!raw) return;
       const saved = JSON.parse(raw) as Record<string, boolean>;
@@ -80,19 +95,25 @@ export default function Checklist({ items, mealId }: ChecklistProps) {
           Check items you need to buy
         </p>
         <button
-          className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white"
+          className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
           type="button"
           onClick={save}
         >
           Save
         </button>
         <button
-          className="rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700"
+          className="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-700"
           type="button"
           onClick={reset}
         >
           Reset
         </button>
+        <Link
+          className="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-700"
+          href={`/meals/${mealId}/ingredients/edit`}
+        >
+          Edit ingredients
+        </Link>
       </div>
       {sorted.length === 0 ? (
         <p className="text-sm text-stone-500">

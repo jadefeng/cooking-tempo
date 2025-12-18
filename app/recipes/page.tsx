@@ -1,11 +1,25 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
-import { deleteRecipe } from "@/app/recipes/actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function RecipesPage() {
+export default async function RecipesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
+  const resolved = (await searchParams) ?? {};
+  const q = resolved.q?.toString().trim() ?? "";
   const recipes = await prisma.recipe.findMany({
+    where: q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" } },
+            { ingredientsText: { contains: q, mode: "insensitive" } },
+            { instructionsText: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: { createdAt: "desc" },
   });
 
@@ -128,25 +142,54 @@ export default async function RecipesPage() {
             Keep your favorites close, edit fast, and cook with confidence.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-            href="/recipes/generate"
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              href="/recipes/generate"
+            >
+              ✨ Generate a recipe ✨
+            </Link>
+            <Link
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              href="/recipes/import"
+            >
+              Import from link
+            </Link>
+            <Link
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              href="/recipes/new"
+            >
+              Add recipe
+            </Link>
+          </div>
+          <form
+            action="/recipes"
+            method="get"
+            className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end"
           >
-            ✨ Generate a recipe ✨
-          </Link>
-          <Link
-            className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-            href="/recipes/import"
-          >
-            Import from link
-          </Link>
-          <Link
-            className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-            href="/recipes/new"
-          >
-            Add recipe
-          </Link>
+            <input
+              className="w-full rounded-full border border-stone-200 bg-white px-4 py-2 text-sm sm:w-64"
+              type="search"
+              name="q"
+              placeholder="Search recipes..."
+              defaultValue={q}
+            />
+            <button
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              type="submit"
+            >
+              Search
+            </button>
+            {q ? (
+              <Link
+                className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+                href="/recipes"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </form>
         </div>
       </div>
       <div className="grid gap-4">

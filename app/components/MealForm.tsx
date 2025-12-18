@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { MealFormState } from "@/app/meals/actions";
+import { useMemo, useState } from "react";
 
 type MealFormProps = {
   action: (
@@ -28,6 +29,14 @@ function SubmitButton() {
 
 export default function MealForm({ action, recipes }: MealFormProps) {
   const [state, formAction] = useFormState(action, initialState);
+  const [search, setSearch] = useState("");
+  const filtered = useMemo(() => {
+    if (!search.trim()) return recipes;
+    const needle = search.toLowerCase();
+    return recipes.filter((recipe) =>
+      recipe.title.toLowerCase().includes(needle),
+    );
+  }, [recipes, search]);
 
   return (
     <form
@@ -52,13 +61,30 @@ export default function MealForm({ action, recipes }: MealFormProps) {
         <p className="text-sm font-semibold text-stone-700">
           Select recipes
         </p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {recipes.length === 0 ? (
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-2">
+          <input
+            className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm sm:w-72"
+            type="search"
+            placeholder="Search recipes..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <button
+            className="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-700"
+            type="button"
+            onClick={() => setSearch(search)}
+          >
+            Search
+          </button>
+        </div>
+        <div className="h-px w-full bg-stone-200" />
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+          {filtered.length === 0 ? (
             <p className="text-sm text-stone-500">
-              Save some recipes first to build a meal.
+              No recipes match that search. Try a different keyword.
             </p>
           ) : (
-            recipes.map((recipe) => (
+            filtered.map((recipe) => (
               <label
                 key={recipe.id}
                 className="flex items-start gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700"

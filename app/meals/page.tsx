@@ -52,8 +52,28 @@ function estimateMealDuration(meal: MealWithRecipes) {
 
 export const dynamic = "force-dynamic";
 
-export default async function MealsPage() {
+export default async function MealsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
+  const resolved = (await searchParams) ?? {};
+  const q = resolved.q?.toString().trim() ?? "";
   const meals = await prisma.meal.findMany({
+    where: q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" } },
+            {
+              recipes: {
+                some: {
+                  recipe: { title: { contains: q, mode: "insensitive" } },
+                },
+              },
+            },
+          ],
+        }
+      : undefined,
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { recipes: true } },
@@ -76,12 +96,43 @@ export default async function MealsPage() {
             Combine recipes into fast repeatable meal plans.
           </p>
         </div>
-        <Link
-          className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-          href="/meals/new"
-        >
-          New meal
-        </Link>
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              href="/meals/new"
+            >
+              New meal
+            </Link>
+          </div>
+          <form
+            action="/meals"
+            method="get"
+            className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end"
+          >
+            <input
+              className="w-full rounded-full border border-stone-200 bg-white px-4 py-2 text-sm sm:w-64"
+              type="search"
+              name="q"
+              placeholder="Search meals..."
+              defaultValue={q}
+            />
+            <button
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              type="submit"
+            >
+              Search
+            </button>
+            {q ? (
+              <Link
+                className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+                href="/meals"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </form>
+        </div>
       </div>
       <div className="grid gap-4">
         {meals.length === 0 ? (
