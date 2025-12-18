@@ -1,5 +1,50 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
+import { defaultDurationMin } from "@/app/lib/cookTimeline";
+
+function parseDurationMin(text: string) {
+  const lower = text.toLowerCase();
+  const hourMatch = lower.match(/(\d+)\s*(hours|hour|hr)\b/);
+  if (hourMatch) return Number(hourMatch[1]) * 60;
+  const minMatch = lower.match(/(\d+)\s*(minutes|minute|min)\b/);
+  if (minMatch) return Number(minMatch[1]);
+  return null;
+}
+
+function detectActiveType(text: string) {
+  const lower = text.toLowerCase();
+  if (/\brest\b|\blet sit\b/.test(lower)) return "rest" as const;
+  if (
+    /\bbake\b|\broast\b|\bsimmer\b|\bboil\b|\bbring to a boil\b|\bpreheat\b/.test(
+      lower,
+    )
+  ) {
+    return "passive" as const;
+  }
+  return "active" as const;
+}
+
+function estimateRecipeDuration(instructionsText: string) {
+  const steps = instructionsText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return steps.reduce((sum, instruction) => {
+    const durationMin = parseDurationMin(instruction);
+    const activeType = detectActiveType(instruction);
+    return sum + (durationMin ?? defaultDurationMin(activeType));
+  }, 0);
+}
+
+function estimateMealDuration(meal: Awaited<ReturnType<typeof prisma.meal.findMany>>[number]) {
+  const recipeDurations = meal.recipes.map((item) =>
+    estimateRecipeDuration(item.recipe.instructionsText),
+  );
+  const maxDuration = recipeDurations.length
+    ? recipeDurations.reduce((a, b) => Math.max(a, b), 0)
+    : 0;
+  return Math.round(maxDuration / 5) * 5;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +56,7 @@ export default async function MealsPage() {
       recipes: {
         include: {
           recipe: {
-            select: { title: true },
+            select: { title: true, instructionsText: true },
           },
         },
       },
@@ -47,11 +92,12 @@ export default async function MealsPage() {
                 ? "No recipes yet — add some to build this meal."
                 : recipeNames.length === 1
                   ? `Includes ${recipeNames[0]}.`
-                  : recipeNames.length === 2
-                    ? `Includes ${recipeNames[0]} and ${recipeNames[1]}.`
-                    : `Includes ${recipeNames[0]}, ${recipeNames[1]}, and ${
-                        recipeNames.length - 2
-                      } more.`;
+                : recipeNames.length === 2
+                  ? `Includes ${recipeNames[0]} and ${recipeNames[1]}.`
+                  : `Includes ${recipeNames[0]}, ${recipeNames[1]}, and ${
+                      recipeNames.length - 2
+                    } more.`;
+            const totalMinutes = estimateMealDuration(meal);
 
             return (
               <div
@@ -62,7 +108,9 @@ export default async function MealsPage() {
                   <h3 className="text-lg font-semibold text-stone-900">
                     {meal.title}
                   </h3>
-                  <p className="text-sm text-stone-500">{summary}</p>
+                  <p className="text-sm text-stone-500">
+                    {summary} • ~{totalMinutes} min
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Link

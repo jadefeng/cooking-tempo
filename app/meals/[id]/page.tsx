@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { defaultDurationMin } from "@/app/lib/cookTimeline";
 import { prisma } from "@/app/lib/prisma";
 import { deleteMeal, removeRecipeFromMeal } from "@/app/meals/actions";
 
@@ -8,6 +9,40 @@ export const dynamic = "force-dynamic";
 type MealDetailProps = {
   params: Promise<{ id: string }>;
 };
+
+function parseDurationMin(text: string) {
+  const lower = text.toLowerCase();
+  const hourMatch = lower.match(/(\d+)\s*(hours|hour|hr)\b/);
+  if (hourMatch) return Number(hourMatch[1]) * 60;
+  const minMatch = lower.match(/(\d+)\s*(minutes|minute|min)\b/);
+  if (minMatch) return Number(minMatch[1]);
+  return null;
+}
+
+function detectActiveType(text: string) {
+  const lower = text.toLowerCase();
+  if (/\brest\b|\blet sit\b/.test(lower)) return "rest" as const;
+  if (
+    /\bbake\b|\broast\b|\bsimmer\b|\bboil\b|\bbring to a boil\b|\bpreheat\b/.test(
+      lower,
+    )
+  ) {
+    return "passive" as const;
+  }
+  return "active" as const;
+}
+
+function estimateRecipeDuration(instructionsText: string) {
+  const steps = instructionsText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return steps.reduce((sum, instruction) => {
+    const durationMin = parseDurationMin(instruction);
+    const activeType = detectActiveType(instruction);
+    return sum + (durationMin ?? defaultDurationMin(activeType));
+  }, 0);
+}
 
 export default async function MealDetailPage({ params }: MealDetailProps) {
   const { id } = await params;
@@ -26,6 +61,16 @@ export default async function MealDetailPage({ params }: MealDetailProps) {
     notFound();
   }
 
+  const totalMinutes = (() => {
+    const recipeDurations = meal.recipes.map((item) =>
+      estimateRecipeDuration(item.recipe.instructionsText),
+    );
+    const maxDuration = recipeDurations.length
+      ? recipeDurations.reduce((a, b) => Math.max(a, b), 0)
+      : 0;
+    return Math.round(maxDuration / 5) * 5;
+  })();
+
   return (
     <section className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -37,6 +82,9 @@ export default async function MealDetailPage({ params }: MealDetailProps) {
             <h2 className="font-display text-3xl text-stone-900">
               {meal.title}
             </h2>
+            <p className="text-sm font-semibold text-stone-700">
+              Total cooking time: ~{totalMinutes} min
+            </p>
             <p className="text-sm text-stone-600">
               {meal.recipes.length} recipe
               {meal.recipes.length === 1 ? "" : "s"} in this meal.
@@ -91,7 +139,8 @@ export default async function MealDetailPage({ params }: MealDetailProps) {
           <div>
             <h3 className="font-display text-xl text-stone-900">Cook Now</h3>
             <p className="text-sm text-stone-600">
-              Follow one unified timeline of steps across every recipe.
+              Follow one unified timeline of steps across every recipe. ~
+              {totalMinutes} min
             </p>
           </div>
           <Link

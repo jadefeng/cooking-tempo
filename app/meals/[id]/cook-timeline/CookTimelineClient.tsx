@@ -1,7 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ScheduledStep, TimelineGroup } from "@/app/lib/cookTimeline";
+import {
+  roundToNearest5,
+  type ScheduledStep,
+  type TimelineGroup,
+} from "@/app/lib/cookTimeline";
 
 type CookTimelineClientProps = {
   mealId: string;
@@ -44,6 +48,22 @@ export default function CookTimelineClient({
 
   const currentStep = merged[cursorIndex] ?? null;
   const nextStep = merged[cursorIndex + 1] ?? null;
+  const totalDuration = useMemo(() => {
+    if (!merged.length) return 0;
+    const earliest = merged.reduce(
+      (min, step) =>
+        step.startTime.getTime() < min ? step.startTime.getTime() : min,
+      merged[0].startTime.getTime(),
+    );
+    const latest = merged.reduce(
+      (max, step) =>
+        step.endTime.getTime() > max ? step.endTime.getTime() : max,
+      merged[0].endTime.getTime(),
+    );
+    const rawMinutes = (latest - earliest) / 60000;
+    // round to nearest 5
+    return Math.round(rawMinutes / 5) * 5;
+  }, [merged]);
 
   function toggleDone(stepId: string) {
     setDoneMap((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
@@ -67,7 +87,7 @@ export default function CookTimelineClient({
     <div className="flex flex-col gap-5">
       {serveAtIsEstimated ? (
         <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-          Serve time not set; using an estimate (90 minutes from now).
+          <p className="font-semibold">Total cooking time: ~{totalDuration} minutes.</p>
         </div>
       ) : null}
 
