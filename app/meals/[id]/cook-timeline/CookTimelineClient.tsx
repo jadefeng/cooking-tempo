@@ -290,7 +290,6 @@ export default function CookTimelineClient({
             <div className="mt-5 text-xs text-stone-500">
               Step runner lives on mobile via “Start cooking”.
             </div>
-            <div className="mt-5 text-xs text-stone-400">Meal id: {mealId}</div>
           </div>
         </aside>
       </div>
