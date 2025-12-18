@@ -47,10 +47,11 @@ export type ScheduledStep = {
   startTime: Date;
   endTime: Date;
   tMinusMin: number;
+  startOffsetMin: number;
 };
 
 export type TimelineGroup = {
-  tMinusMin: number;
+  startOffsetMin: number;
   label: string;
   steps: ScheduledStep[];
 };
@@ -126,6 +127,7 @@ export function buildCookTimeline(input: TimelineInput): TimelineResult {
         startTime,
         endTime,
         tMinusMin,
+        startOffsetMin: 0,
       });
 
       cursor = startTime;
@@ -134,18 +136,25 @@ export function buildCookTimeline(input: TimelineInput): TimelineResult {
 
   scheduled.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
+  const startBaseline = scheduled[0]?.startTime ?? serveAt;
+  const scheduledWithOffsets = scheduled.map((step) => {
+    const offset = minutesBetween(startBaseline, step.startTime);
+    const startOffsetMin = Math.max(0, roundToNearest5(offset));
+    return { ...step, startOffsetMin };
+  });
+
   const groupMap = new Map<number, ScheduledStep[]>();
-  for (const step of scheduled) {
-    const list = groupMap.get(step.tMinusMin) ?? [];
+  for (const step of scheduledWithOffsets) {
+    const list = groupMap.get(step.startOffsetMin) ?? [];
     list.push(step);
-    groupMap.set(step.tMinusMin, list);
+    groupMap.set(step.startOffsetMin, list);
   }
 
   const groups: TimelineGroup[] = Array.from(groupMap.entries())
-    .sort((a, b) => b[0] - a[0])
-    .map(([tMinusMin, steps]) => ({
-      tMinusMin,
-      label: `T-${tMinusMin}`,
+    .sort((a, b) => a[0] - b[0])
+    .map(([startOffsetMin, steps]) => ({
+      startOffsetMin,
+      label: `${startOffsetMin} min`,
       steps: steps.sort((a, b) => a.startTime.getTime() - b.startTime.getTime()),
     }));
 

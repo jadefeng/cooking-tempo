@@ -124,7 +124,7 @@ export default function CookTimelineClient({
                     <div className="flex flex-wrap gap-3 text-sm text-stone-600">
                       <span>{currentStep.durationMin} min</span>
                       <span className="text-stone-300">•</span>
-                      <span>{`T-${currentStep.tMinusMin}`}</span>
+                      <span>{`${currentStep.startOffsetMin} min from start`}</span>
                       {formatTemp(currentStep) ? (
                         <>
                           <span className="text-stone-300">•</span>
@@ -169,7 +169,7 @@ export default function CookTimelineClient({
                         {nextStep.recipeTitle}: {nextStep.instruction}
                       </p>
                       <p className="mt-1 text-xs text-stone-600">
-                        {`T-${nextStep.tMinusMin}`} • {nextStep.durationMin} min
+                        {`${nextStep.startOffsetMin} min`} • {nextStep.durationMin} min
                       </p>
                     </div>
                   ) : null}
@@ -181,7 +181,7 @@ export default function CookTimelineClient({
           ) : (
             <div className="flex flex-col gap-5">
               {groups.map((group) => (
-                <div key={group.tMinusMin} className="space-y-3">
+                <div key={group.startOffsetMin} className="space-y-3">
                   <div className="sticky top-2 z-10 -mx-1 rounded-2xl bg-[var(--cream)]/90 px-1 py-2 backdrop-blur">
                     <h3 className="font-display text-lg text-stone-900">
                       {group.label}
@@ -255,7 +255,7 @@ export default function CookTimelineClient({
                 </p>
                 <p className="text-sm text-stone-700">{currentStep.instruction}</p>
                 <p className="text-xs text-stone-600">
-                  {`T-${currentStep.tMinusMin}`} • {currentStep.durationMin} min
+                  {`${currentStep.startOffsetMin} min`} • {currentStep.durationMin} min
                 </p>
               </div>
             ) : (

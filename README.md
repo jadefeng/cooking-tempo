@@ -15,6 +15,10 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+Environment:
+- Set `DATABASE_URL` to your Postgres connection string (local or Vercel Postgres).
+- This project now uses Postgres everywhere (SQLite files are removed).
+
 ## Scripts
 
 - `npm run dev` - start the development server
@@ -27,6 +31,5 @@ Open `http://localhost:3000`.
 - Recipe import is best-effort: JSON-LD is preferred, with a heuristic fallback.
 - Instagram import uses public metadata captions and parses headings like
   Ingredients/Instructions when present.
-- Ingredients and instructions are stored as newline-separated text for MVP
-  simplicity.
-- SQLite database lives at `prisma/dev.db` (via `DATABASE_URL="file:./dev.db"`).
+- Ingredients and instructions are stored as newline-separated text for MVP simplicity.
+- Database is Postgres (set `DATABASE_URL` accordingly).

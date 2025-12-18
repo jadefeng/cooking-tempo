@@ -26,15 +26,15 @@ export default function RootLayout({
                   Cooking Tempo
                 </Link>
               </div>
-              <nav className="flex flex-wrap gap-3 text-sm font-semibold text-stone-700">
+              <nav className="flex flex-wrap gap-3 text-base font-semibold text-stone-800">
                 <Link
-                  className="rounded-full border border-stone-200 bg-white px-4 py-2 transition hover:border-stone-400"
+                  className="border border-stone-300 bg-white px-5 py-3 transition hover:border-stone-500 hover:shadow-sm"
                   href="/recipes"
                 >
                   Recipes
                 </Link>
                 <Link
-                  className="rounded-full border border-stone-200 bg-white px-4 py-2 transition hover:border-stone-400"
+                  className="border border-stone-300 bg-white px-5 py-3 transition hover:border-stone-500 hover:shadow-sm"
                   href="/meals"
                 >
                   Meals
