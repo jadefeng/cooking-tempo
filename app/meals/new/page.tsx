@@ -3,6 +3,8 @@ import MealForm from "@/app/components/MealForm";
 import { prisma } from "@/app/lib/prisma";
 import { createMeal } from "@/app/meals/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function NewMealPage() {
   const recipes = await prisma.recipe.findMany({
     orderBy: { title: "asc" },

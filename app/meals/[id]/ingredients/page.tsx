@@ -4,6 +4,8 @@ import Checklist from "@/app/meals/[id]/ingredients/Checklist";
 import { prisma } from "@/app/lib/prisma";
 import { splitLines } from "@/app/lib/recipes";
 
+export const dynamic = "force-dynamic";
+
 type MealIngredientsProps = {
   params: Promise<{ id: string }>;
 };

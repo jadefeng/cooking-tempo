@@ -4,6 +4,8 @@ import RecipeForm from "@/app/components/RecipeForm";
 import { prisma } from "@/app/lib/prisma";
 import { updateRecipe } from "@/app/recipes/actions";
 
+export const dynamic = "force-dynamic";
+
 type RecipeEditProps = {
   params: Promise<{ id: string }>;
 };

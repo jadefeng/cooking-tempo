@@ -4,6 +4,8 @@ import { prisma } from "@/app/lib/prisma";
 import { splitLines } from "@/app/lib/recipes";
 import { deleteRecipe } from "@/app/recipes/actions";
 
+export const dynamic = "force-dynamic";
+
 type RecipeDetailProps = {
   params: Promise<{ id: string }>;
 };

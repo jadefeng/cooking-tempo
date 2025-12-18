@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function MealsPage() {
   const meals = await prisma.meal.findMany({
     orderBy: { createdAt: "desc" },

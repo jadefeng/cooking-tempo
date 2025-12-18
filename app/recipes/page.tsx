@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import { deleteRecipe } from "@/app/recipes/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function RecipesPage() {
   const recipes = await prisma.recipe.findMany({
     orderBy: { createdAt: "desc" },

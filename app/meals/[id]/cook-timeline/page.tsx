@@ -8,6 +8,8 @@ import {
 import { prisma } from "@/app/lib/prisma";
 import { splitLines } from "@/app/lib/recipes";
 
+export const dynamic = "force-dynamic";
+
 type CookTimelinePageProps = {
   params: Promise<{ id: string }>;
 };

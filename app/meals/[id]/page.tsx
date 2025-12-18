@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { deleteMeal, removeRecipeFromMeal } from "@/app/meals/actions";
 
+export const dynamic = "force-dynamic";
+
 type MealDetailProps = {
   params: Promise<{ id: string }>;
 };
