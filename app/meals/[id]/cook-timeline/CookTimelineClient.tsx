@@ -155,7 +155,7 @@ export default function CookTimelineClient({
                       ) : null}
                     </div>
                   </div>
-                  <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                  <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
                     <button
                       className="rounded-2xl border border-stone-200 bg-white px-5 py-3 text-sm font-semibold text-stone-700"
                       type="button"
@@ -171,11 +171,7 @@ export default function CookTimelineClient({
                     >
                       Done
                     </button>
-                    {cursorIndex >= merged.length - 1 ? (
-                      <span className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white">
-                        Last step
-                      </span>
-                    ) : (
+                    {cursorIndex >= merged.length - 1 ? null : (
                       <button
                         className="rounded-2xl bg-[var(--cocoa)] px-5 py-3 text-sm font-semibold text-white"
                         type="button"
@@ -184,6 +180,11 @@ export default function CookTimelineClient({
                         Next
                       </button>
                     )}
+                    {cursorIndex >= merged.length - 1 ? (
+                      <span className="text-sm font-semibold text-stone-600">
+                        Last step
+                      </span>
+                    ) : null}
                   </div>
                   {nextStep ? (
                     <div className="mt-4 rounded-3xl border border-stone-200 bg-white px-5 py-4">
