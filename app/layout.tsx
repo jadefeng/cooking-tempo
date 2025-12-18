@@ -4,7 +4,20 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Cooking Tempo",
-  description: "A simple, focused recipe and meal planner MVP.",
+  description: "Plan and cook meals in sync.",
+  openGraph: {
+    title: "Cooking Tempo",
+    description: "Plan and cook meals in sync.",
+    url: "https://cooking-tempo.jadefeng.com",
+    siteName: "Cooking Tempo",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Cooking Tempo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cooking Tempo",
+    description: "Plan and cook meals in sync.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
