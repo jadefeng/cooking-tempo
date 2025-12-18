@@ -269,29 +269,7 @@ export default function CookTimelineClient({
           )}
         </div>
 
-        <aside className="hidden lg:block">
-          <div className="sticky top-6 rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-              Next Up
-            </p>
-            {currentStep ? (
-              <div className="mt-3 space-y-2">
-                <p className="text-sm font-semibold text-stone-900">
-                  {currentStep.recipeTitle}
-                </p>
-                <p className="text-sm text-stone-700">{currentStep.instruction}</p>
-                <p className="text-xs text-stone-600">
-                  {`${currentStep.startOffsetMin} min`} • {currentStep.durationMin} min
-                </p>
-              </div>
-            ) : (
-              <p className="mt-3 text-sm text-stone-600">No steps yet.</p>
-            )}
-            <div className="mt-5 text-xs text-stone-500">
-              Step runner lives on mobile via “Start cooking”.
-            </div>
-          </div>
-        </aside>
+        <aside className="hidden lg:block" aria-hidden />
       </div>
     </div>
   );
