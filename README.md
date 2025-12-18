@@ -29,3 +29,4 @@ Open `http://localhost:3000`.
   Ingredients/Instructions when present.
 - Ingredients and instructions are stored as newline-separated text for MVP
   simplicity.
+- SQLite database lives at `prisma/dev.db` (via `DATABASE_URL="file:./dev.db"`).
