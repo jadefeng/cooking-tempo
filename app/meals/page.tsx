@@ -174,6 +174,12 @@ export default async function MealsPage({
                   >
                     Ingredients list
                   </Link>
+                  <Link
+                    className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white !text-white hover:!text-white focus-visible:!text-white visited:!text-white"
+                    href={`/meals/${meal.id}/cook-timeline`}
+                  >
+                    Start cooking
+                  </Link>
                 </div>
               </div>
             );
