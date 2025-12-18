@@ -36,11 +36,15 @@ function estimateRecipeDuration(instructionsText: string) {
   }, 0);
 }
 
-function estimateMealDuration(meal: Awaited<ReturnType<typeof prisma.meal.findMany>>[number]) {
-  const recipeDurations = meal.recipes.map((item) =>
+type MealWithRecipes = Awaited<ReturnType<typeof prisma.meal.findMany>>[number] & {
+  recipes: { recipe: { instructionsText: string } }[];
+};
+
+function estimateMealDuration(meal: MealWithRecipes) {
+  const recipeDurations = meal.recipes?.map((item) =>
     estimateRecipeDuration(item.recipe.instructionsText),
   );
-  const maxDuration = recipeDurations.length
+  const maxDuration = recipeDurations?.length
     ? recipeDurations.reduce((a, b) => Math.max(a, b), 0)
     : 0;
   return Math.round(maxDuration / 5) * 5;

@@ -131,15 +131,21 @@ export default async function RecipesPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-            href="/recipes/new"
+            href="/recipes/generate"
           >
-            Add recipe
+            ✨ Generate a recipe ✨
           </Link>
           <Link
             className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
             href="/recipes/import"
           >
             Import from link
+          </Link>
+          <Link
+            className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+            href="/recipes/new"
+          >
+            Add recipe
           </Link>
         </div>
       </div>
