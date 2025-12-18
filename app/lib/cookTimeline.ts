@@ -163,7 +163,7 @@ export function buildCookTimeline(input: TimelineInput): TimelineResult {
     serveAtIsEstimated,
     estimatedServeAtReason: "unset",
     estimatedServeInMin,
-    steps: scheduled,
+    steps: scheduledWithOffsets,
     groups,
   };
 }

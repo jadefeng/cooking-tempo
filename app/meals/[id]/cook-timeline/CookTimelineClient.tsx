@@ -118,7 +118,7 @@ export default function CookTimelineClient({
               {currentStep ? (
                 <>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Now
+                    {currentStep.startOffsetMin} min
                   </p>
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center gap-2">
