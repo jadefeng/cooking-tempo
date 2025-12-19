@@ -281,7 +281,7 @@ export default function GenerateRecipePage() {
           <SubmitButton />
           <p className="text-xs text-stone-500">
             This can take a 1-2 minutes to generate, so please be patient. <br></br>
-            Powered by ChatGPT. You can re-run or edit the result in your recipes list.
+            Powered by ChatGPT. You can edit the result in your recipes list.
           </p>
         </div>
       </form>
