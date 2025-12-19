@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   roundToNearest5,
   type ScheduledStep,
@@ -45,6 +45,31 @@ export default function CookTimelineClient({
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({});
   const merged = useMemo(() => steps, [steps]);
   const [cursorIndex, setCursorIndex] = useState(0);
+  const [saveState, setSaveState] = useState<"idle" | "saved">("idle");
+  const storageKey = `cookTimelineDone:${mealId}`;
+  const skipNextSaveRef = useRef(true);
+  const saveTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey);
+    if (!stored) return;
+    try {
+      const parsed = JSON.parse(stored) as Record<string, boolean>;
+      if (parsed && typeof parsed === "object") {
+        setDoneMap(parsed);
+      }
+    } catch {
+      // Ignore malformed saved state.
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        window.clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const currentStep = merged[cursorIndex] ?? null;
   const nextStep = merged[cursorIndex + 1] ?? null;
@@ -83,6 +108,29 @@ export default function CookTimelineClient({
     setCursorIndex((prev) => Math.max(prev - 1, 0));
   }
 
+  function persistProgress(nextMap: Record<string, boolean>) {
+    localStorage.setItem(storageKey, JSON.stringify(nextMap));
+    setSaveState("saved");
+    if (saveTimeoutRef.current) {
+      window.clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = window.setTimeout(() => {
+      setSaveState("idle");
+    }, 2000);
+  }
+
+  function saveProgress() {
+    persistProgress(doneMap);
+  }
+
+  useEffect(() => {
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false;
+      return;
+    }
+    persistProgress(doneMap);
+  }, [doneMap]);
+
   return (
     <div className="flex flex-col gap-5">
       {serveAtIsEstimated ? (
@@ -100,15 +148,24 @@ export default function CookTimelineClient({
             steps.
           </p>
         </div>
-        <button
-          className={`rounded-full px-5 py-3 text-sm font-semibold text-white ${
-            startMode ? "bg-rose-600" : "bg-emerald-600"
-          }`}
-          type="button"
-          onClick={() => setStartMode((prev) => !prev)}
-        >
-          {startMode ? "Stop cooking" : "Start cooking"}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            className="rounded-full border border-stone-200 bg-white px-5 py-3 text-sm font-semibold text-stone-700"
+            type="button"
+            onClick={saveProgress}
+          >
+            {saveState === "saved" ? "Saved" : "Save"}
+          </button>
+          <button
+            className={`rounded-full px-5 py-3 text-sm font-semibold text-white ${
+              startMode ? "bg-rose-600" : "bg-emerald-600"
+            }`}
+            type="button"
+            onClick={() => setStartMode((prev) => !prev)}
+          >
+            {startMode ? "Stop cooking" : "Start cooking"}
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
