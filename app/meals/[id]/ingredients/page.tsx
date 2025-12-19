@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Checklist from "@/app/meals/[id]/ingredients/Checklist";
+import { aggregateIngredientLines } from "@/app/lib/ingredients";
 import { prisma } from "@/app/lib/prisma";
 import { splitLines } from "@/app/lib/recipes";
 
@@ -31,17 +32,12 @@ export default async function MealIngredientsPage({
     notFound();
   }
 
-  const ingredientSet = new Map<string, string>();
+  const ingredientLines: string[] = [];
   meal.recipes.forEach((item) => {
     const lines = splitLines(item.recipe.ingredientsText);
-    lines.forEach((line) => {
-      const key = line.toLowerCase();
-      if (!ingredientSet.has(key)) {
-        ingredientSet.set(key, line);
-      }
-    });
+    ingredientLines.push(...lines);
   });
-  const ingredients = Array.from(ingredientSet.values()).filter((item) =>
+  const ingredients = aggregateIngredientLines(ingredientLines).filter((item) =>
     q ? item.toLowerCase().includes(q.toLowerCase()) : true,
   );
 

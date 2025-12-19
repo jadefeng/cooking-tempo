@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditIngredients } from "@/app/meals/[id]/ingredients/EditIngredients";
+import { aggregateIngredientLines } from "@/app/lib/ingredients";
 import { prisma } from "@/app/lib/prisma";
 import { splitLines } from "@/app/lib/recipes";
 
@@ -28,17 +29,12 @@ export default async function EditIngredientsPage({
     notFound();
   }
 
-  const ingredientSet = new Map<string, string>();
+  const ingredientLines: string[] = [];
   meal.recipes.forEach((item) => {
     const lines = splitLines(item.recipe.ingredientsText);
-    lines.forEach((line) => {
-      const key = line.toLowerCase();
-      if (!ingredientSet.has(key)) {
-        ingredientSet.set(key, line);
-      }
-    });
+    ingredientLines.push(...lines);
   });
-  const ingredients = Array.from(ingredientSet.values());
+  const ingredients = aggregateIngredientLines(ingredientLines);
 
   return (
     <section className="flex flex-col gap-6">
