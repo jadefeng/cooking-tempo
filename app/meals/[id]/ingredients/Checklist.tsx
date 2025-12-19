@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 type ChecklistProps = {
   items: string[];
   mealId: string;
+  query?: string;
 };
 
-export default function Checklist({ items, mealId }: ChecklistProps) {
+export default function Checklist({ items, mealId, query }: ChecklistProps) {
   const storageKey = `meal-checklist-${mealId}`;
   const customKey = `meal-ingredients-custom-${mealId}`;
   const [customItems, setCustomItems] = useState<string[] | null>(null);
@@ -114,6 +115,27 @@ export default function Checklist({ items, mealId }: ChecklistProps) {
         >
           Edit ingredients
         </Link>
+        <form
+          action={`/meals/${mealId}/ingredients`}
+          method="get"
+          className="flex w-full flex-wrap gap-2 sm:w-auto sm:items-center"
+        >
+          <input
+            className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm sm:w-64"
+            type="search"
+            name="q"
+            placeholder="Search ingredients..."
+            defaultValue={query}
+          />
+          {query ? (
+            <Link
+              className="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-700"
+              href={`/meals/${mealId}/ingredients`}
+            >
+              Clear
+            </Link>
+          ) : null}
+        </form>
       </div>
       {sorted.length === 0 ? (
         <p className="text-sm text-stone-500">

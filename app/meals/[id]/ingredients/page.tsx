@@ -52,7 +52,7 @@ export default async function MealIngredientsPage({
             ← Back to meal
           </Link>
           <h2 className="font-display text-2xl text-stone-900">
-            Ingredients list
+            Ingredients list (aggregated)
           </h2>
           <p className="text-sm text-stone-600">
             Combined ingredients across recipes in this meal. Check off what you
@@ -60,27 +60,7 @@ export default async function MealIngredientsPage({
           </p>
         </div>
 
-        <form
-          action={`/meals/${meal.id}/ingredients`}
-          method="get"
-          className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end"
-        >
-          <input
-            className="w-full rounded-full border border-stone-200 bg-white px-4 py-2 text-sm sm:w-64"
-            type="search"
-            name="q"
-            placeholder="Search ingredients..."
-            defaultValue={q}
-          />
-          {q ? (
-            <Link
-              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
-              href={`/meals/${meal.id}/ingredients`}
-            >
-              Clear
-            </Link>
-          ) : null}
-        </form>
+        
       </div>
 
       {ingredients.length === 0 ? (
@@ -90,7 +70,7 @@ export default async function MealIngredientsPage({
             : "No ingredients yet for this meal."}
         </div>
       ) : (
-        <Checklist items={ingredients} mealId={meal.id} />
+        <Checklist items={ingredients} mealId={meal.id} query={q} />
       )}
     </section>
   );
