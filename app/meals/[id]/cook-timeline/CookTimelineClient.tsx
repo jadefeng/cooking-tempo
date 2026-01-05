@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   roundToNearest5,
@@ -156,6 +157,12 @@ export default function CookTimelineClient({
           >
             {saveState === "saved" ? "Saved" : "Save"}
           </button>
+          <Link
+            className="rounded-full border border-amber-200 bg-amber-500 px-5 py-3 text-sm font-semibold text-amber-950"
+            href={`/meals/${mealId}/ingredients`}
+          >
+            Ingredients list
+          </Link>
           <button
             className={`rounded-full px-5 py-3 text-sm font-semibold text-white ${
               startMode ? "bg-rose-600" : "bg-emerald-600"

@@ -143,11 +143,11 @@ async function callOpenAI(prompt: string): Promise<AiRecipe | null> {
       {
         role: "system",
         content:
-          "You are ChatGPT, returning ONLY JSON. Keys: title, prepTime, cookTime, ingredients (array of strings with measurements), instructions (array of step strings). Each instruction must include the time it takes (e.g., 'Sear chicken in oil — 6 minutes'). No prose, only JSON.",
+          "You are ChatGPT, returning ONLY JSON. Keys: title, prepTime, cookTime, ingredients (array of strings with measurements), instructions (array of step strings). Each instruction must include the time it takes (e.g., 'Sear chicken in oil — 6 minutes') and include ingredient quantities when referenced (e.g., 'Add 1 cup chicken broth'). No prose, only JSON.",
       },
       {
         role: "user",
-        content: `Generate a complete recipe for the dish name "${prompt}". Include: prep time, cook time, precise ingredients list with measurements, and step-by-step instructions. Each instruction should include the time it takes.`,
+        content: `Generate a complete recipe for the dish name "${prompt}". Include: prep time, cook time, precise ingredients list with measurements, and step-by-step instructions. Each instruction should include the time it takes and the ingredient quantities when referenced.`,
       },
     ],
       }),
